@@ -1,0 +1,134 @@
+## Gen711/811 Practical Exam 2023
+
+## NAME: Riley Wilson
+
+## This is a practice Practical. You can ignore the points listed next to questions, but they represent what they would be worth if this was a real practical
+
+__INSTRUCTIONS__
+1. DO NOT USE COMMANDS OR SYNTAX WE HAVE NOT COVERED IN LAB UNLESS OTHERWISE SPECIFIED. Everything that you need to complete this exam has been covered in the lab sections, and can be found in the presentations. If you really want to use outside resources, please provide the reason you use it and what it does. 
+   - For example, If I use `grep "^>" file.txt`, I must specify that the "^" character matches the front of the line and I used it to specify fasta header lines always start with ">".
+
+2.  Write the command below each question. If the question specifies to add any other information, provide that below the command you used to generate the answer
+    - For example, If the question is "Find how many words are in a file, give the command and number of words", my answer could be 
+
+        ```
+        wc -w example_file.txt
+        15
+        ```
+
+__HELPFUL INFO__ (this is during the actual practical. If you need help on this practive, you can ask me  on slack and I can give some guidence)
+- Do not spend too much time on a single prompt. It's important to get to all prompts.    
+- If you get stuck and do not know how to proceed: specifically ask for the answer.  
+- Help will get you to the next step, but you will lose points for that prompt.  
+- Questions on clarification of the question does not result in the loss of points. 
+
+## Practical Start
+
+### 1. Paste the command(s) below that you used to get the practical (2 points)
+	cp /tmp/practice_practical/practice_practical.md ~
+	mv practice_practical.md practice_practical.txt
+	nano practice_practical.txt
+
+### 2. From your home directory, make a new directory to hold fastq files called 'analysis' within your home directory (2 points)
+	mdkir ~/analysis	
+
+### 3. Copy only the fastq files listed below directly into the 'analysis' directory without leaving your home directory, and only using 1 command. (2 points, partial credit if you need to change directories first, partial credit for doing it in multiple commands)
+
+```
+/tmp/practice_practical/Sample1.fastq
+/tmp/practice_practical/Sample2.fastq
+/tmp/practice_practical/Sample3.fastq
+/tmp/practice_practical/Sample4.fastq
+```
+	cp -r /tmp/practice_practical ~
+	cp practice_practical/*.fastq analysis
+
+### 4. Use an absolute path to change your current working directory to the 'analysis' directory. (2 points, partial credit for using a relative path) (Remember there is a command to get your current absolute path if you don't remember it!)
+	cd /home/users/rmw1063/analysis
+
+### 5. To confirm that the format of the FASTQ files, view the first 4 lines of one of the files. Provide the command and the first 4 lines of the file below. (4 points)
+	head -4 Sample1.fastq
+@HCGS_SEQ:494:HCN2LBCX3:1:2203:5209:46615 1:N:0:TCCGGAGATATAGCCT                 │- However, the base call quality scores could contain '@' as well, which might >
+CTAGGACTTTTAAAACCAGGAAGCCCTGGGCTACAGGCACACTGCAGCTGCGAAAGGCATCCCAAGGGGAGTGCAAAAGTGACACAACTTGGCTGCCTCTGCTCCTATTCTCATGAGACCATCCTGAACCATAGGCTGATTTTCC+
+DDDDDG?HFECFCHHEEHHEEHHEH1<111D1C1<D<CH1CCCHCHHE@G1CCC?/<<DCHH1CECHIIICEFGEHHHH<C
+1C@C<<G1DGHIEHG?C111<11<D1D<<<D<CGCGH11<11DEE1C@FH1G1DECC111<FFC  
+
+### You've decided that you want to make a separate file of the reads to BLAST them at NCBI to make sure they belong to the species that you sequenced. However, your blast program is written to accept FASTA files rather than FASTQ files (FASTA files only contain the header line above the read, and the read itself). You will need to make a 'FASTA' file from each FASTQ file. (Technically these "fasta" files will still use the "@" symbol in headers instead of ">", but ignore it for the purpose of the practical)
+
+#### Hints: 
+- FASTA only needs 2/4 lines that are in a FASTQ: 
+  1.  the header line that starts with '@'
+  2.  the sequence right after the header. 
+- However, the base call quality scores could contain '@' as well, which might lead to unwanted matches. 
+- You can use the info in the header line to be very specific about what you are trying to match. View the fastq files and find a pattern that matches all headers
+- Add the `--no-group-separator` flag to the other options of your command to keep the `--` separator out of the output
+  - you can try running the command with and without this option to see what it changes
+
+### 6 Before you make the new files, use piping to see the first 10 lines of the output of the first file (Sample1.fastq). If you still see the `--` separator then you have not included the correct flag from above. List the command and the first 10 lines output below (4 points, partial credit with "--" in the file) 
+	head Sample1.fastq | grep --no-group-separator @
+@HCGS_SEQ:494:HCN2LBCX3:1:2203:5209:46615 1:N:0:TCCGGAGATATAGCCT                 
+DDDDDG?HFECFCHHEEHHEEHHEH1<111D1C1<D<CH1CCCHCHHE@G1CCC?/<<DCHH1CECHIIICEFGEHHHH<C
+1C@C<<G1DGHIEHG?C111<11<D1D<<<D<CGCGH11<11DEE1C@FH1G1DECC111<FFC                 
+@HCGS_SEQ:494:HCN2LBCX3:1:1115:15609:74081 1:N:0:TCCGGAGATATAGCCT               
+CDDDDIIIIIIIIIIIIIIIIIIIIIIIIIHIGIIIGHHHHFHIIIIIIIIIIHIIIIIIIIIIIIIIIIIIHIGIIIIIH
+IIIIIIIIIHH1FHIIIIIIHIIIIIIIIIIIIIIIIIIIIGIIIIIIIIIIIIHIIIIIIIIIIIIIIIIIIIIGIIIII
+IHIIHHHHHHIHIHHIGHHIIIIIIIIIIIHHHIIIIIHIIIHHGHGHHIIIHHIHIGHFHHIH@GHIIIIIHIIICHHIG
+HIIIIII                                                                          │
+@HCGS_SEQ:494:HCN2LBCX3:1:2110:13977:49445 1:N:0:TCCGGAGATATAGCCT
+
+
+### 7 If the output looks correct, take the full output and redirect it into a new file called Sample1.fasta. Repeat for each Sample fastq conversion to fasta. There should be 4 output files at the end, and you should list each command you ran below (5 points)
+- remember, you can use the up arrow to reuse your previous commands instead of retyping it each time!
+	head Sample1.fastq | grep --no-group-separator @ > Sample1.fasta
+	head Sample2.fastq | grep --no-group-separator @ > Sample2.fasta
+	head Sample3.fastq | grep --no-group-separator @ > Sample3.fasta
+	head Sample4.fastq | grep --no-group-separator @ > Sample4.fasta
+
+### 8. Count the total number of times the sequence "ACTCG" is found in the newly created "fasta" files. Do not include any times this may be seen in the headers. Only use the fasta files, not the fastq files. List the command, and the output count below. (5 points)
+- hint: make sure to count EVERY time "ACTCG" is seen, not just how many lines it is in!
+	grep -v "@" | grep -o "ACTCG" *.fasta | wc -l
+	6 times
+
+### 9. Make a new directory called 'to_blast' in your current directory. In one command, move the fasta files into this new 'to_blast' directory while ignoring the fastq files. List the 2 commands below. (4 points, partial points for using more than one command to move fasta files to new directory)
+	mkdir to_blast analysis
+	mv *.fasta to_blast
+
+### 10. Without changing directories, what command could you use to confirm that the files made it into the 'to_blast' folder. (2 points)
+	ls ~/analysis/to_blast
+
+
+### 11. What is the 100th line in the Sample1.fasta file? List the commands used and the 100th line below. (2 points)
+- hint: piping is useful here, and we did something similar in a class example!
+	head -n 101 Sample1.fasta | tail -n 1
+	@HCGS_SEQ:494:HCN2LBCX3:1:2110:13977:49445 1:N:0:TCCGGAGATATAGCCT
+
+
+### 12. A new command we have never used is `md5sum`. When you supply it a path to a file, it will output a string of characters, a space, and then the filename specified in the path (run `md5sum Sample1.fasta` to test this if you want). Run md5sum on all the fasta files at the same time, and redirect the output to a new file called md5sums.txt. List the command used to generate the file, and below that, the 4 lines within the file (2 points)
+	md5sum *.fasta > md5sums.txt
+	7f46eb36587f0f4a8292efb356e9895f  Sample1.fasta
+	76ddecbff0b008f42162b1a37e9f9751  Sample2.fasta
+	6a32b01c73ab2f7e8ce3b264aa0f58ac  Sample3.fasta
+	9f4d3c33d962bd71e182457fd0777ead  Sample4.fasta
+
+### 13. Next, take the first column of values (the strings of characters) from the md5sums.txt file, and append them back onto the end of the file. View the file using your preferred command. You should have 8 lines in the file, 4 with characters and then File names, and 4 with just characters. List the command used to generate the last 4 lines of the file, and below that, all 8 lines within md5sums.txt below (2 points) 
+- hint: remember, the file is "delimited" by spaces (" ")!
+	cut -d" " -f1 md5sums.txt >> md5sums.txt
+	7f46eb36587f0f4a8292efb356e9895f  Sample1.fasta
+	76ddecbff0b008f42162b1a37e9f9751  Sample2.fasta
+	6a32b01c73ab2f7e8ce3b264aa0f58ac  Sample3.fasta
+	9f4d3c33d962bd71e182457fd0777ead  Sample4.fasta
+	7f46eb36587f0f4a8292efb356e9895f
+	76ddecbff0b008f42162b1a37e9f9751
+	6a32b01c73ab2f7e8ce3b264aa0f58ac
+	9f4d3c33d962bd71e182457fd0777ead
+
+### 14. Add your name to the end of 'md5sums.txt' file however you want. list the command used below (2 points)
+	nano md5sums.txt
+	(added name and saved)
+
+
+### Extra credit: Run fastqc on one of the fastq files, and one of the fasta files. Did they both run? Why or why not? (if you dont remember how to run fastqc, you can use the manual to look it up, or if you have time, find a source on the internet to help. List the source below if you do) (2 points)
+- hint: you may still have the last time you ran fastqc in your history! you can pipe history into grep and check if it is still there to see the format we used last time!
+
+
+### DO THIS LAST (You dont have to list the outputs or commands for this part). To turn in this practical, please rename this file as `practice_practical_yourname.txt`, and download it to your local computer using `sftp` or your prefered method. Upload the txt file to canvas, where it will be graded. MAKE SURE TO SAVE THE FILE BEFORE DOWNLOADING/ UPLOADING TO CANVAS.
